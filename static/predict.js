@@ -17,11 +17,12 @@ let model;
 async function loadModel(name) {
     $(".progress-bar").show();
     model = undefined;
-    model = await tf.loadModel("http://localhost:81//tfjs-models/MobileNet/model.json");
+    model = await tf.loadLayersModel(`http://localhost:81//tfjs-models/${name}/model.json`);
     $(".progress-bar").hide();
 };
 
 $("#predict-button").click(async function () {
+
     let image = $("#selected-image").get(0);
     let modelName = $("model-selector").val();
     let tensor = preprocessImage(image, modelName);
@@ -44,7 +45,7 @@ $("#predict-button").click(async function () {
 });
 
 function preprocessImage(image, modelName) {
-    let tensor = tf.fromPixels(image)
+    let tensor = tf.browser.fromPixels(image)
         .resizeNearestNeighbor([224, 224])
         .toFloat()
 
@@ -57,7 +58,7 @@ function preprocessImage(image, modelName) {
             .reverse(2)
             .expandDims();
     }
-    else if (modelName === "MobileNet") {
+    else if (modelName === "MobileNet") { 
         let offset = tf.scalar(127.5);
         return tensor.sub(offset)
             .div(offset)
